@@ -1,0 +1,47 @@
+:source-highlighter: coderay
+:icons: font
+:imagesdir: ./images
+
+= Hackathon CI/CD
+:toc:
+
+image::IMG_4175.jpg[]
+
+== Introduction to Continous Integration
+
+http://docs.gocd.org/curenrt[Current documemntation on GoCD]
+
+CI = Continuus Integration
+
+CD = Continous
+D = Deployment
+D= Delivery
+
+== GoCD Introduction
+
+image::IMG_4176.jpg[]
+
+Pipeline as a first class citizen
+
+Pipeline contains Stages
+Stage is a group of Operations. Can be run in parallel.
+Tasks - a task is one command line. i.e. install, build, 
+
+
+== Goals for Today
+
+* Setup GoCD
+* myfirst pipeline as gui
+* myfirst pipeline as code
+* serialized build
+* cached dependencies
+* scaling
+* value map presentation
+* fan in, fan out, deploy on aws
+
+== Setup GoCD on AWS
+
+
+
+
+
