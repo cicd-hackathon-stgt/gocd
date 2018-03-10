@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd"
+        schemaVersion="105">
+    <server artifactsdir="artifacts" agentAutoRegisterKey="123456789abcdefgh987654321"
+            webhookSecret="random-webhook-secret" commandRepositoryLocation="default"
+            serverId="random-server-id" tokenGenerationKey="random-token-generation-key"/>
+    <pipelines group="defaultGroup">
+        <pipeline name="build">
+            <environmentvariables>
+                <variable name="JAVA_HOME">
+                    <value>/usr/</value>
+                </variable>
+            </environmentvariables>
+            <materials>
+                <git url="https://github.com/cloudfoundry-samples/hello-spring-cloud"/>
+            </materials>
+            <stage name="goldfish">
+                <jobs>
+                    <job name="defaultJob">
+                        <tasks>
+                            <exec command="mvn">
+                                <arg>clean</arg>
+                                <arg>package</arg>
+                                <runif status="passed"/>
+                            </exec>
+                        </tasks>
+                    </job>
+                </jobs>
+            </stage>
+        </pipeline>
+    </pipelines>
+</cruise>
