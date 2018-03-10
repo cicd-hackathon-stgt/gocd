@@ -39,9 +39,103 @@ Tasks - a task is one command line. i.e. install, build,
 * value map presentation
 * fan in, fan out, deploy on aws
 
-== Setup GoCD on AWS
+== GoCD Architecture
+
+image::IMG_4177.jpg[Server and Agents, 400, 400]
+
+* One Server
+* Multiple Agents
+* An Agent is running a Stage
 
 
+== Setup GoCD
+
+=== On AWS
+
+There is already a ready to run AMI at AWS.
 
 
+=== On my Mac with Docker
 
+I want to setup GoCD on my Macintosh with an Agent with which i can build a small Spring Boot application.
+I need a java compiler and maven on the Agent.
+
+
+Welcome to the world of pain!
+
+First we start an actual GoCD Server. 
+
+NOTE: Why the heck is there no docker image tagged with *latest*?
+....
+docker run -d -p8153:8153 -p8154:8154 gocd/gocd-server:v18.2.0
+....
+
+Now i went through some pain trying to build my own docker imnage with an agent based on an official gocd/go-agent image.
+Unfortunately the gocd-agents do NOT contain a full JDK, but only a JRE.
+Luckily there is a bit heavy but working agent thanks to Ashwanth Kumar!
+The git repo for that agent is https://github.com/ashwanthkumar/docker-gocd-agent-jdk-aws-maven-sbt[here].
+
+....
+docker run -d --net="host" -e GO_SERVER_URL=https://localhost:8154/go ashwanthkumar/gocd-agent-jdk-aws-maven-sbt:latest
+....
+
+After starting the agent you have to go to the GoCD Server frontend to the Agents section and *activate* the agent.
+
+image::screen-activate-agent.png[]
+
+Now lets setup a simple pipeline!
+
+== My first pipeline
+
+My project is located https://github.com/herrwieger/springbootsample[here]
+
+I setup a simple pipeline in GoCD with the web frontend.
+
+image::screen-pipeline.png[]
+
+In the second step, the connection to source code repo got configured.
+They use the rather strange sounding name material for dealing with that.
+
+image::screen-pipeline-material.png[]
+
+Now its time to setup the first build step.
+Out of the box GoCD does not support Maven that much.
+Supported tools are: Ant, Nant, Rake.
+If you do not use one of these tools you can invoke an arbitrary command line.
+The only prerequsite is, that the build agent runninbg this task needs the respective tool locally installed.
+
+image::screen-task-tools.png[Tools, 200, 200]
+
+Support for mvn is rather linmited. But at least you can lookup typical mvn invocations.
+
+image::screen-lookup-command.png[lookup comnmnands, 200, 200]
+
+Finishing the three step wizard you get a simple pipeline, which can compile a mvn project.
+
+Going back on the pipeline tab in the web frontend you get an overview over all available pipelines.
+
+image::screen-pipelines.png[pipelines,400,400]
+
+Now you can start the pipeline by pressing the pause symbol (to unpause) and then the start button.
+
+image::screen-running-pipeline.png[]
+
+Clicking on the pipeline name shows you the execution history of the pipeline.
+
+image::screen-pipeline-execution.png[]
+
+Getting info on an execution run you have to go over the build status bar on the info icon and click.
+
+image::screen-pipeline-info.png[pipeline-info,200,200]
+
+So now you get the stage details.
+
+image::screen-stage-details.png[]
+
+And from here you can get the info on the jobs executed.
+
+image::screen-state-details-jobs.png[]
+
+Clicking on the job name finally moves you to the console output of the job.
+
+image::screen-job-console.png[]
